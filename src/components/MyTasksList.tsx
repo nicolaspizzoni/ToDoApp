@@ -1,13 +1,6 @@
 import React from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet, FlatListProps } from 'react-native';
 
-function FlatListHeaderComponent() {
-  return (
-    <View>
-      <Text style={styles.header}>Minhas tasks</Text>
-    </View>
-  )
-}
 
 interface MyTasksListProps {
   tasks: {
@@ -17,9 +10,10 @@ interface MyTasksListProps {
   }[];
   onPress: (id: number) => void;
   onLongPress: (id: number) => void;
+  darkMode: boolean;
 }
 
-export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
+export function MyTasksList({ tasks, onLongPress, onPress, darkMode }: MyTasksListProps) {
   return (
     <FlatList
       data={tasks}
@@ -31,14 +25,34 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
             activeOpacity={0.7}
             onPress={() => onPress(item.id)}
             onLongPress={() => onLongPress(item.id)}
-            style={item.done ? styles.taskButtonDone : styles.taskButton}
+            style={
+              item.done ? 
+              [
+                styles.taskButtonDone,
+                {backgroundColor: darkMode ? '#222222' : 'rgba(25, 61, 223, 0.1)'}
+              ] 
+              : styles.taskButton
+            }
           >
             <View 
               testID={`marker-${index}`}
-              style={item.done ? styles.taskMarkerDone : styles.taskMarker}
+              style={
+                item.done ? 
+                [
+                  styles.taskMarkerDone,
+                  {backgroundColor: darkMode ? '#12A952' : '#273FAD'}
+                ] 
+                : [
+                    styles.taskMarker,
+                    {borderColor: darkMode ? '#12A952' : '#273FAD'}
+                  ]
+              }
             />
             <Text 
-              style={item.done ? styles.taskTextDone : styles.taskText}
+              style={
+                item.done ? 
+                [styles.taskTextDone, {color: darkMode ? '#E1E1E6' : '#A09CB1'}] : 
+                {color: darkMode ? '#E1E1E6' : '#3D3D4D'}}
             >
               {item.title}
             </Text>
@@ -46,7 +60,11 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
         )
       }}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={<FlatListHeaderComponent />}
+      ListHeaderComponent={
+        <Text style={[styles.header, {color: darkMode ? '#BF4AD4' : '#3D3D4D'}]}>
+          Minhas tasks
+        </Text>
+      }
       ListHeaderComponentStyle={{
         marginBottom: 20
       }}
@@ -60,7 +78,6 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
 
 const styles = StyleSheet.create({
   header: {
-    color: '#3D3D4D',
     fontSize: 24,
     fontFamily: 'Poppins-SemiBold'
   },
@@ -81,16 +98,12 @@ const styles = StyleSheet.create({
     borderColor: '#3D3D4D',
     marginRight: 10
   },
-  taskText: {
-    color: '#3D3D4D',
-  },
   taskButtonDone: {
     flex: 1,
     paddingHorizontal: 10,
     paddingVertical: 12,
     marginBottom: 4,
     borderRadius: 4,
-    backgroundColor: 'rgba(25, 61, 223, 0.1)',
     flexDirection: 'row',
     alignItems: 'center'
   },
@@ -98,11 +111,9 @@ const styles = StyleSheet.create({
     height: 16,
     width: 16,
     borderRadius: 8,
-    backgroundColor: '#273FAD',
     marginRight: 10
   },
   taskTextDone: {
-    color: '#A09CB1',
     textDecorationLine: 'line-through'
   }
 })
